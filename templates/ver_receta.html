@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ receta.titulo }} - Mis Recetas{% endblock %}
+
+{% block content %}
+<section>
+    <h2>{{ receta.titulo }}</h2>
+
+    <h3>Ingredientes:</h3>
+    <ul>
+        {% for ingrediente in receta.ingredientes %}
+        <li>{{ ingrediente }}</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Pasos:</h3>
+    <ol>
+        {% for paso in receta.pasos %}
+        <li>{{ paso }}</li>
+        {% endfor %}
+    </ol>
+
+    <a href="{{ url_for('index') }}" style="color: #4CAF50;">← Volver a la lista de recetas</a>
+
+    <br>
+    <a href="{{ url_for('borrar', receta_id=receta.id) }}" style="color: #e74c3c; font-weight: bold;">🗑️ Borrar esta receta</a>
+</section>
+{% endblock %}

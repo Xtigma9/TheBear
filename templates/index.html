@@ -15,19 +15,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
             {% for receta in recetas %}
             <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                <h3>{{ receta.titulo }}</h3>
-                <strong>Ingredientes:</strong>
-                <ul>
-                    {% for ingrediente in receta.ingredientes %}
-                    <li>{{ ingrediente }}</li>
-                    {% endfor %}
-                </ul>
-                <strong>Pasos:</strong>
-                <ol>
-                    {% for paso in receta.pasos %}
-                    <li>{{ paso }}</li>
-                    {% endfor %}
-                </ol>
+                <h3><a href="{{ url_for('ver_receta', receta_id=receta.id) }}" style="text-decoration: none; color: #333;">{{ receta.titulo }}</a></h3>
                 <a href="{{ url_for('borrar', receta_id=receta.id) }}" style="color: #e74c3c; font-weight: bold;">🗑️ Borrar</a>
             </div>
             {% endfor %}

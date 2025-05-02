@@ -28,6 +28,13 @@ def index():
 
     return render_template('index.html', recetas=recetas)
 
+@app.route('/receta/<receta_id>')
+def ver_receta(receta_id):
+    recetas = cargar_recetas()  # Cargar todas las recetas desde el JSON
+    receta = next((r for r in recetas if r['id'] == receta_id), None)
+    if receta is None:
+        return "Receta no encontrada", 404
+    return render_template('ver_receta.html', receta=receta)
 
 @app.route('/agregar', methods=['GET', 'POST'])
 def agregar():
@@ -49,12 +56,13 @@ def agregar():
         return redirect(url_for('index'))
     return render_template('agregar.html')
 
-@app.route('/borrar/<receta_id>')
+@app.route('/borrar/<receta_id>', methods=['GET'])
 def borrar(receta_id):
     recetas = cargar_recetas()
-    recetas = [r for r in recetas if r['id'] != receta_id]
-    guardar_recetas(recetas)
-    return redirect(url_for('index'))
+    recetas = [r for r in recetas if r['id'] != receta_id]  # Filtramos la receta a borrar
+    guardar_recetas(recetas)  # Guardamos el archivo JSON actualizado
+    return redirect(url_for('index'))  # Redirigimos a la lista de recetas
+
 
 if __name__ == '__main__':
     os.makedirs('data', exist_ok=True)

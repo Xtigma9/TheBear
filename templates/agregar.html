@@ -9,17 +9,25 @@
     <form method="POST" style="display: flex; flex-direction: column; gap: 15px; max-width: 500px;">
         <div>
             <label for="titulo" style="font-weight: bold;">Título:</label><br>
-            <input type="text" id="titulo" name="titulo" required>
+            <input type="text" id="titulo" name="titulo" 
+                   required  maxlength="100" 
+                   pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ0-9 ,.]+"
+                   title="El título solo puede contener letras, números, espacios, comas y puntos."
+                   placeholder="Ej: Tortilla de patatas">
         </div>
 
         <div>
             <label for="ingredientes" style="font-weight: bold;">Ingredientes (uno por línea):</label><br>
-            <textarea id="ingredientes" name="ingredientes" rows="5" required></textarea>
+            <textarea id="ingredientes" name="ingredientes" 
+                      required 
+                      placeholder="Ej: 4 patatas&#10;6 huevos&#10;1 cebolla"></textarea>
         </div>
 
         <div>
             <label for="pasos" style="font-weight: bold;">Pasos (uno por línea):</label><br>
-            <textarea id="pasos" name="pasos" rows="5" required></textarea>
+            <textarea id="pasos" name="pasos"  
+                      required 
+                      placeholder="Ej: Pelar las patatas&#10;Cortar la cebolla&#10;Freír en aceite"></textarea>
         </div>
 
         <button type="submit" style="align-self: flex-start;">✅ Guardar Receta</button>

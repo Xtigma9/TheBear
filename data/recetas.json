@@ -28,18 +28,5 @@
             "primera prueba \r",
             "con prueba"
         ]
-    },
-    {
-        "id": "3",
-        "titulo": "test222",
-        "ingredientes": [
-            "test \r",
-            "testtes\r",
-            "test"
-        ],
-        "pasos": [
-            "asdasdjaksdasdalñsdmasld\r",
-            "alsdnkmalsdn"
-        ]
     }
 ]
