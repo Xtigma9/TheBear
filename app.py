@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import json
 import os
+import uuid
 
 app = Flask(__name__)
 
@@ -44,7 +45,7 @@ def agregar():
         pasos = request.form['pasos']
 
         receta = {
-            'id': str(len(cargar_recetas()) + 1),
+            'id': str(uuid.uuid4()),
             'titulo': titulo,
             'ingredientes': ingredientes.split('\n'),
             'pasos': pasos.split('\n')
