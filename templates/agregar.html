@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Receta - Mis Recetas{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Agregar Nueva Receta</h2>
+
+    <form method="POST" style="display: flex; flex-direction: column; gap: 15px; max-width: 500px;">
+        <div>
+            <label for="titulo" style="font-weight: bold;">Título:</label><br>
+            <input type="text" id="titulo" name="titulo" required>
+        </div>
+
+        <div>
+            <label for="ingredientes" style="font-weight: bold;">Ingredientes (uno por línea):</label><br>
+            <textarea id="ingredientes" name="ingredientes" rows="5" required></textarea>
+        </div>
+
+        <div>
+            <label for="pasos" style="font-weight: bold;">Pasos (uno por línea):</label><br>
+            <textarea id="pasos" name="pasos" rows="5" required></textarea>
+        </div>
+
+        <button type="submit" style="align-self: flex-start;">✅ Guardar Receta</button>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,45 @@
+[
+    {
+        "id": "1",
+        "titulo": "Tortilla de patatas",
+        "ingredientes": [
+            "4 patatas medianas",
+            "6 huevos",
+            "1 cebolla",
+            "Aceite de oliva",
+            "Sal"
+        ],
+        "pasos": [
+            "Pelar y cortar las patatas en rodajas finas.",
+            "Picar la cebolla.",
+            "Freír las patatas y la cebolla en aceite hasta que estén blandas.",
+            "Batir los huevos y mezclarlos con las patatas y cebolla escurridas.",
+            "Verter la mezcla en la sartén y cuajar por ambos lados."
+        ]
+    },
+    {
+        "id": "2",
+        "titulo": "Esto es una prueba",
+        "ingredientes": [
+            "prueba\r",
+            "test"
+        ],
+        "pasos": [
+            "primera prueba \r",
+            "con prueba"
+        ]
+    },
+    {
+        "id": "3",
+        "titulo": "test222",
+        "ingredientes": [
+            "test \r",
+            "testtes\r",
+            "test"
+        ],
+        "pasos": [
+            "asdasdjaksdasdalñsdmasld\r",
+            "alsdnkmalsdn"
+        ]
+    }
+]
