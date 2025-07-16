@@ -5,10 +5,12 @@ import uuid
 
 app = Flask(__name__)
 
-JSONBIN_API_KEY = os.getenv("JSONBIN_API_KEY")
-BIN_ID = os.getenv("JSONBIN_BIN_ID")  
+# Variables de entorno
+JSONBIN_API_KEY = os.getenv("JSONBIN_API_KEY")           # X-Master-Key
+JSONBIN_ACCESS_KEY = os.getenv("JSONBIN_ACCESS_KEY")     # X-Access-Key (para modificar bin)
+BIN_ID = os.getenv("JSONBIN_BIN_ID")                     # ID del bin de recetas
 
-HEADERS = {
+HEADERS_BASE = {
     'Content-Type': 'application/json',
     'X-Master-Key': JSONBIN_API_KEY
 }
@@ -18,34 +20,44 @@ def cargar_recetas():
     if not BIN_ID:
         return []
 
-    url = f'https://api.jsonbin.io/v3/bins/{BIN_ID}/latest'
-    res = requests.get(url, headers=HEADERS)
+    url = f'https://api.jsonbin.io/v3/b/{BIN_ID}/latest'
+    res = requests.get(url, headers=HEADERS_BASE)
+    print(url)
     if res.status_code == 200:
         return res.json()['record']
     else:
+        print(f"Error al cargar recetas: {res.status_code}")
         return []
 
 def guardar_recetas(recetas):
     """Guarda la lista completa de recetas en jsonbin.io"""
     global BIN_ID
 
-    url_base = 'https://api.jsonbin.io/v3/bins'
+    url_base = 'https://api.jsonbin.io/v3/b'
 
     if not BIN_ID:
-        # Crear nuevo bin
-        res = requests.post(url_base, headers=HEADERS, json=recetas)
+        # Crear nuevo bin (solo necesita master key)
+        res = requests.post(url_base, headers=HEADERS_BASE, json=recetas)
         if res.status_code in (200, 201):
             BIN_ID = res.json()['metadata']['id']
             print(f"Nuevo BIN_ID creado: {BIN_ID}")
-            # IMPORTANTE: debes actualizar esta variable de entorno JSONBIN_BIN_ID en tu entorno o en Render manualmente
             return True
         else:
+            print(f"Error al crear bin: {res.status_code} - {res.text}")
             return False
     else:
-        # Actualizar bin existente (PUT)
+        # Actualizar bin existente (necesita access key)
+        headers = HEADERS_BASE.copy()
+        if JSONBIN_ACCESS_KEY:
+            headers['X-Access-Key'] = JSONBIN_ACCESS_KEY
+
         url = f'{url_base}/{BIN_ID}'
-        res = requests.put(url, headers=HEADERS, json=recetas)
-        return res.status_code == 200
+        res = requests.put(url, headers=headers, json=recetas)
+        if res.status_code == 200:
+            return True
+        else:
+            print(f"Error al actualizar bin: {res.status_code} - {res.text}")
+            return False
 
 @app.route('/')
 def index():
@@ -96,7 +108,6 @@ def borrar(receta_id):
         return redirect(url_for('index'))
     else:
         return "Error al borrar receta en jsonbin", 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
