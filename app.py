@@ -1,23 +1,51 @@
 from flask import Flask, render_template, request, redirect, url_for
-import json
+import requests
 import os
 import uuid
 
 app = Flask(__name__)
 
-DATA_FILE = 'data/recetas.json'
+JSONBIN_API_KEY = os.getenv("JSONBIN_API_KEY")
+BIN_ID = os.getenv("JSONBIN_BIN_ID")  
 
-# Cargar recetas del archivo JSON
+HEADERS = {
+    'Content-Type': 'application/json',
+    'X-Master-Key': JSONBIN_API_KEY
+}
+
 def cargar_recetas():
-    if not os.path.exists(DATA_FILE):
+    """Carga las recetas desde jsonbin.io usando el BIN_ID"""
+    if not BIN_ID:
         return []
-    with open(DATA_FILE, 'r', encoding='utf-8') as f:
-        return json.load(f)
 
-# Guardar recetas en el archivo JSON
+    url = f'https://api.jsonbin.io/v3/bins/{BIN_ID}/latest'
+    res = requests.get(url, headers=HEADERS)
+    if res.status_code == 200:
+        return res.json()['record']
+    else:
+        return []
+
 def guardar_recetas(recetas):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(recetas, f, indent=4, ensure_ascii=False)
+    """Guarda la lista completa de recetas en jsonbin.io"""
+    global BIN_ID
+
+    url_base = 'https://api.jsonbin.io/v3/bins'
+
+    if not BIN_ID:
+        # Crear nuevo bin
+        res = requests.post(url_base, headers=HEADERS, json=recetas)
+        if res.status_code in (200, 201):
+            BIN_ID = res.json()['metadata']['id']
+            print(f"Nuevo BIN_ID creado: {BIN_ID}")
+            # IMPORTANTE: debes actualizar esta variable de entorno JSONBIN_BIN_ID en tu entorno o en Render manualmente
+            return True
+        else:
+            return False
+    else:
+        # Actualizar bin existente (PUT)
+        url = f'{url_base}/{BIN_ID}'
+        res = requests.put(url, headers=HEADERS, json=recetas)
+        return res.status_code == 200
 
 @app.route('/')
 def index():
@@ -31,7 +59,7 @@ def index():
 
 @app.route('/receta/<receta_id>')
 def ver_receta(receta_id):
-    recetas = cargar_recetas()  # Cargar todas las recetas desde el JSON
+    recetas = cargar_recetas()
     receta = next((r for r in recetas if r['id'] == receta_id), None)
     if receta is None:
         return "Receta no encontrada", 404
@@ -53,18 +81,22 @@ def agregar():
 
         recetas = cargar_recetas()
         recetas.append(receta)
-        guardar_recetas(recetas)
-        return redirect(url_for('index'))
+        if guardar_recetas(recetas):
+            return redirect(url_for('index'))
+        else:
+            return "Error al guardar receta en jsonbin", 500
+
     return render_template('agregar.html')
 
 @app.route('/borrar/<receta_id>', methods=['GET'])
 def borrar(receta_id):
     recetas = cargar_recetas()
-    recetas = [r for r in recetas if r['id'] != receta_id]  # Filtramos la receta a borrar
-    guardar_recetas(recetas)  # Guardamos el archivo JSON actualizado
-    return redirect(url_for('index'))  # Redirigimos a la lista de recetas
+    recetas = [r for r in recetas if r['id'] != receta_id]
+    if guardar_recetas(recetas):
+        return redirect(url_for('index'))
+    else:
+        return "Error al borrar receta en jsonbin", 500
 
 
 if __name__ == '__main__':
-    os.makedirs('data', exist_ok=True)
     app.run(debug=True)
